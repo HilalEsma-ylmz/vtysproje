@@ -1,0 +1,32 @@
+﻿@model IEnumerable<vtysproje.Models.CourseStudent>
+
+<h2>Onay Bekleyen Ders Seçimleri</h2>
+
+<form asp-action="ConfirmSelection" method="post">
+    <table>
+        <thead>
+            <tr>
+                <th>Öğrenci Adı</th>
+                <th>Ders Kodu</th>
+                <th>Ders Adı</th>
+                <th>Seçim Tarihi</th>
+                <th>Onay</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var selection in Model)
+            {
+                <tr>
+                    <td>@selection.Student.FirstName @selection.Student.LastName</td>
+                    <td>@selection.Course.CourseCode</td>
+                    <td>@selection.Course.CourseName</td>
+                    <td>@selection.SelectionDate.ToShortDateString()</td>
+                    <td>
+                        <input type="checkbox" name="confirmedSelections" value="@selection.SelectionID" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit">Seçilenleri Onayla</button>
+</form>

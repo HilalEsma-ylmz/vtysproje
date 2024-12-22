@@ -1,0 +1,25 @@
+﻿@model IEnumerable<vtysproje.Models.CourseStudent>
+
+<h2>Seçilen Derslerim</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Kod</th>
+            <th>Ders Adı</th>
+            <th>Kredi</th>
+            <th>Onay Durumu</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var selection in Model)
+        {
+            <tr>
+                <td>@selection.Course.CourseCode</td>
+                <td>@selection.Course.CourseName</td>
+                <td>@selection.Course.Credit</td>
+                <td>@(selection.IsApproved ? "Onaylandı" : "Beklemede")</td>
+            </tr>
+        }
+    </tbody>
+</table>

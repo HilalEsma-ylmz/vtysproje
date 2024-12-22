@@ -1,0 +1,30 @@
+﻿@model IEnumerable<vtysproje.Models.Course>
+
+<h2>Ders Seçimi</h2>
+
+<form asp-action="AddSelection" method="post">
+    <table>
+        <thead>
+            <tr>
+                <th>Kod</th>
+                <th>Ders Adı</th>
+                <th>Kredi</th>
+                <th>Seç</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in Model)
+            {
+                <tr>
+                    <td>@course.CourseCode</td>
+                    <td>@course.CourseName</td>
+                    <td>@course.Credit</td>
+                    <td>
+                        <input type="checkbox" name="selectedCourses" value="@course.CourseCode" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit">Dersleri Kaydet</button>
+</form>
