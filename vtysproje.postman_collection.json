@@ -1,0 +1,84 @@
+{
+	"info": {
+		"_postman_id": "d43b5b57-7f1c-43eb-8dae-750db6a974a2",
+		"name": "vtysproje",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40143550"
+	},
+	"item": [
+		{
+			"name": "Student",
+			"item": [
+				{
+					"name": "http://localhost:5084/api/StudentApi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5084/api/StudentApi",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5084",
+							"path": [
+								"api",
+								"StudentApi"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Course",
+			"item": [
+				{
+					"name": "http://localhost:5084/api/CourseApi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5084/api/CourseApi",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5084",
+							"path": [
+								"api",
+								"CourseApi"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Advisor",
+			"item": []
+		},
+		{
+			"name": "http://localhost:5084/api/AdvisorApi",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5084/api/AdvisorApi",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5084",
+					"path": [
+						"api",
+						"AdvisorApi"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
