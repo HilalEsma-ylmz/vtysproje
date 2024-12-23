@@ -30,7 +30,7 @@ namespace vtysproje.Controllers
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAllCourses), new { id = course.CourseCode }, course);
+            return CreatedAtAction(nameof(GetAllCourses), new { id = course.CourseName }, course);
         }
 
         private ActionResult<Course> CreatedAtAction(string v, object value, Course course)

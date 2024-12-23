@@ -1,26 +1,39 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace vtysproje.Models
+using System.ComponentModel.DataAnnotations.Schema;
 
+namespace vtysproje.Models
 {
     public class Course
     {
         [Key]
+        public int CourseID { get; set; } // Primary Key
 
-        public int CourseCode { get; set; }
+        [Required]
+        [MaxLength(10)] // Maksimum uzunluk 10 karakter
+        public string CourseCode { get; set; } // Örneğin, "CS101"
 
-        public string CourseName { get; set; }
+        [Required]
+        [MaxLength(100)] // Maksimum uzunluk 100 karakter
+        public string CourseName { get; set; } // Dersin adı
 
-        public bool IsMandatory { get; set; }
+        [Required]
+        public bool IsMandatory { get; set; } // Zorunlu olup olmadığını belirtir
 
-        public string Credit { get; set; }
+        [Required]
+        [MaxLength(10)] // Maksimum uzunluk 10 karakter
+        public string Credit { get; set; } // Kredisi
 
-        public string Department { get; set; }
+        [Required]
+        [MaxLength(50)] // Maksimum uzunluk 50 karakter
+        public string Department { get; set; } // Bölüm bilgisi
 
-        public int? AdvisorID { get; set; }
+        // Advisor ile ilişki (Optional Foreign Key)
+        public int? AdvisorID { get; set; } // Advisor'ın ID'si (nullable)
 
-        public Advisor Advisor { get; set; }
+        [ForeignKey("AdvisorID")]
+        public Advisor Advisor { get; set; } // Navigation Property
 
-        public List<Student> Students { get; set; } = new List<Student>();
-
+        // Student ile Many-to-Many İlişki
+        public List<CourseStudent> CourseStudents { get; set; } = new List<CourseStudent>();
     }
 }

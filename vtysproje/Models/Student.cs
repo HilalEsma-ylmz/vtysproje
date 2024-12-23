@@ -15,13 +15,11 @@ namespace vtysproje.Models
 
         public int? AdvisorID { get; set; }
 
-        public string EnrollmentDate { get; set; }
-
         public Advisor Advisor { get; set; }
 
         public string Password { get; set; }
 
 
-        public List<Course> Courses_Selected { get; set; } = new List<Course>();
+        public List<CourseStudent> CourseStudents { get; set; } = new List<CourseStudent>();
     }
 }

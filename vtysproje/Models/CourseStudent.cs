@@ -12,10 +12,12 @@ namespace vtysproje.Models
         public int StudentID { get; set; } // Foreign Key to Students
 
         [Required]
-        public int CourseID { get; set; } // Foreign Key to Courses
+        public string CourseName { get; set; } // Foreign Key to Courses
 
         [Required]
         public DateTime SelectionDate { get; set; } // Seçim tarihi
+
+        
 
         public bool IsApproved { get; set; } = false; // Onay durumu (Varsayılan: false)
 
@@ -24,6 +26,8 @@ namespace vtysproje.Models
         public virtual Student Student { get; set; }
 
         [ForeignKey("CourseID")]
+
+        public int CourseID { get; set; }
         public virtual Course Course { get; set; }
     }
 }

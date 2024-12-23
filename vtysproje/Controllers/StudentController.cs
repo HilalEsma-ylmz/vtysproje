@@ -7,7 +7,7 @@ namespace vtysproje.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentController
+    public class StudentController : Controller // Değişiklik burada: ControllerBase yerine Controller kullanıldı
     {
         private readonly ApplicationDbContext _context;
 
@@ -16,44 +16,84 @@ namespace vtysproje.Controllers
             _context = context;
         }
 
-        // GET: Öğrencinin mevcut ders seçimleri
+        // GET: Öğrencinin mevcut ders seçimlerini döndürür (API)
         [HttpGet("getSelections/{studentId}")]
         public async Task<ActionResult<IEnumerable<CourseStudent>>> GetSelections(int studentId)
         {
-            var selections = await _context.CourseStudent
-                .Include(s => s.Course)
-                .Where(s => s.StudentID == studentId)
+            var selections = await _context.CourseStudents
+                .Include(cs => cs.Course)
+                .Where(cs => cs.StudentID == studentId)
                 .ToListAsync();
 
-            return selections;
+            if (selections == null || selections.Count == 0)
+            {
+                return NotFound(new { Message = "No selections found for this student." });
+            }
+
+            return Ok(selections);
         }
 
-        // POST: Öğrenci ders seçimi yapar
+        // POST: Öğrenci ders seçimi yapar (API)
         [HttpPost("addSelection")]
         public async Task<ActionResult<CourseStudent>> AddSelection(CourseStudent selection)
         {
+            // Öğrenci var mı kontrol et
             var studentExists = await _context.Students.AnyAsync(s => s.StudentID == selection.StudentID);
-            var courseExists = await _context.Courses.AnyAsync(c => c.CourseCode == selection.CourseID);
-
-            if (!studentExists || !courseExists)
+            if (!studentExists)
             {
-                return BadRequestResult(new { Message = "Invalid Student or Course ID" });
+                return BadRequest(new { Message = "Invalid Student ID" });
             }
 
-            _context.CourseStudent.Add(selection);
+            // Ders var mı kontrol et
+            var courseExists = await _context.Courses.AnyAsync(c => c.CourseName == selection.CourseName);
+            if (!courseExists)
+            {
+                return BadRequest(new { Message = "Invalid Course Name" });
+            }
+
+            // Daha önce seçilmiş mi kontrol et
+            var alreadyExists = await _context.CourseStudents.AnyAsync(cs =>
+                cs.StudentID == selection.StudentID && cs.CourseName == selection.CourseName);
+            if (alreadyExists)
+            {
+                return BadRequest(new { Message = "This course is already selected by the student." });
+            }
+
+            // Yeni seçim ekle
+            _context.CourseStudents.Add(selection);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetSelections), new { studentId = selection.StudentID }, selection);
         }
 
-        private ActionResult<CourseStudent> CreatedAtAction(string v, object value, CourseStudent selection)
+        // GET: Öğrencinin seçimlerini bir HTML sayfasında gösterir (MVC)
+        [HttpGet("CourseSelection/{id}")]
+        public IActionResult CourseSelection(int id)
         {
-            throw new NotImplementedException();
-        }
+            var selections = _context.CourseStudents
+                .Include(cs => cs.Course)
+                .Where(cs => cs.StudentID == id)
+                .ToList();
 
-        private ActionResult<CourseStudent> BadRequestResult(object value)
-        {
-            throw new NotImplementedException();
+            if (selections == null || !selections.Any())
+            {
+                return NotFound("Seçimler bulunamadı.");
+            }
+
+            return View(selections); // `Views/Student/CourseSelection.cshtml` dosyasına yönlendirilir.
         }
-    }   
+        [HttpGet("GetStudentInfo/{id}")]
+        public async Task<IActionResult> GetStudentInfo(int id)
+        {
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StudentID == id);
+
+            if (student == null)
+            {
+                return NotFound(new { Message = "Student not found" });
+            }
+
+            return View(student); // Öğrenci bilgilerini ilgili View'a gönder
+        }
+    }
 }

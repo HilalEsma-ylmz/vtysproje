@@ -22,21 +22,6 @@ namespace vtysproje.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CourseStudent", b =>
-                {
-                    b.Property<int>("Courses_SelectedCourseCode")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentsStudentID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Courses_SelectedCourseCode", "StudentsStudentID");
-
-                    b.HasIndex("StudentsStudentID");
-
-                    b.ToTable("CourseStudent");
-                });
-
             modelBuilder.Entity("vtysproje.Models.Advisor", b =>
                 {
                     b.Property<int>("AdvisorID")
@@ -72,35 +57,76 @@ namespace vtysproje.Migrations
 
             modelBuilder.Entity("vtysproje.Models.Course", b =>
                 {
-                    b.Property<int>("CourseCode")
+                    b.Property<int>("CourseID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseCode"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseID"));
 
                     b.Property<int?>("AdvisorID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CourseCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("CourseName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Credit")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("bit");
+
+                    b.HasKey("CourseID");
+
+                    b.HasIndex("AdvisorID");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("vtysproje.Models.CourseStudent", b =>
+                {
+                    b.Property<int>("SelectionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SelectionID"));
+
+                    b.Property<int>("CourseID")
                         .HasColumnType("int");
 
                     b.Property<string>("CourseName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Credit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsMandatory")
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.HasKey("CourseCode");
+                    b.Property<DateTime>("SelectionDate")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("AdvisorID");
+                    b.Property<int>("StudentID")
+                        .HasColumnType("int");
 
-                    b.ToTable("Courses");
+                    b.HasKey("SelectionID");
+
+                    b.HasIndex("CourseID");
+
+                    b.HasIndex("StudentID");
+
+                    b.ToTable("CourseStudents");
                 });
 
             modelBuilder.Entity("vtysproje.Models.Student", b =>
@@ -115,10 +141,6 @@ namespace vtysproje.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EnrollmentDate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -141,21 +163,6 @@ namespace vtysproje.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("CourseStudent", b =>
-                {
-                    b.HasOne("vtysproje.Models.Course", null)
-                        .WithMany()
-                        .HasForeignKey("Courses_SelectedCourseCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("vtysproje.Models.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentsStudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("vtysproje.Models.Course", b =>
                 {
                     b.HasOne("vtysproje.Models.Advisor", "Advisor")
@@ -163,6 +170,25 @@ namespace vtysproje.Migrations
                         .HasForeignKey("AdvisorID");
 
                     b.Navigation("Advisor");
+                });
+
+            modelBuilder.Entity("vtysproje.Models.CourseStudent", b =>
+                {
+                    b.HasOne("vtysproje.Models.Course", "Course")
+                        .WithMany("CourseStudents")
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vtysproje.Models.Student", "Student")
+                        .WithMany("CourseStudents")
+                        .HasForeignKey("StudentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("vtysproje.Models.Student", b =>
@@ -177,6 +203,16 @@ namespace vtysproje.Migrations
             modelBuilder.Entity("vtysproje.Models.Advisor", b =>
                 {
                     b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("vtysproje.Models.Course", b =>
+                {
+                    b.Navigation("CourseStudents");
+                });
+
+            modelBuilder.Entity("vtysproje.Models.Student", b =>
+                {
+                    b.Navigation("CourseStudents");
                 });
 #pragma warning restore 612, 618
         }

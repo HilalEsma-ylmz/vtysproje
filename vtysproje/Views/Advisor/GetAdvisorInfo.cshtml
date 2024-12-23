@@ -1,0 +1,59 @@
+﻿@model vtysproje.Models.Advisor
+
+@{
+    ViewData["Title"] = "Danışman Bilgileri";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Danışman bilgilerini bir tabloda gösteriyoruz -->
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Alan</th>
+            <th scope="col">Değer</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Ad Soyad</strong></td>
+            <td>@Model.FullName</td>
+        </tr>
+        <tr>
+            <td><strong>Unvan</strong></td>
+            <td>@Model.Title</td>
+        </tr>
+        <tr>
+            <td><strong>Bölüm</strong></td>
+            <td>@Model.Department</td>
+        </tr>
+        <tr>
+            <td><strong>Email</strong></td>
+            <td>@Model.Email</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Danışmanlık Yaptığı Dersler</h3>
+@if (Model.Courses.Any())
+{
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Ders Adı</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var course in Model.Courses)
+            {
+                        <tr>
+                            <td>@course.CourseName</td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+}
+else
+{
+        <p>Danışmanlık yaptığı ders bulunmamaktadır.</p>
+}

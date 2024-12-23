@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace vtysproje.Migrations
 {
     /// <inheritdoc />
-    public partial class mig1 : Migration
+    public partial class mig2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,17 +32,18 @@ namespace vtysproje.Migrations
                 name: "Courses",
                 columns: table => new
                 {
-                    CourseCode = table.Column<int>(type: "int", nullable: false)
+                    CourseID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CourseCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    CourseName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsMandatory = table.Column<bool>(type: "bit", nullable: false),
-                    Credit = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Credit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     AdvisorID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Courses", x => x.CourseCode);
+                    table.PrimaryKey("PK_Courses", x => x.CourseID);
                     table.ForeignKey(
                         name: "FK_Courses_Advisors_AdvisorID",
                         column: x => x.AdvisorID,
@@ -59,7 +61,6 @@ namespace vtysproje.Migrations
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AdvisorID = table.Column<int>(type: "int", nullable: true),
-                    EnrollmentDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -73,24 +74,29 @@ namespace vtysproje.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseStudent",
+                name: "CourseStudents",
                 columns: table => new
                 {
-                    Courses_SelectedCourseCode = table.Column<int>(type: "int", nullable: false),
-                    StudentsStudentID = table.Column<int>(type: "int", nullable: false)
+                    SelectionID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentID = table.Column<int>(type: "int", nullable: false),
+                    CourseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SelectionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    CourseID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CourseStudent", x => new { x.Courses_SelectedCourseCode, x.StudentsStudentID });
+                    table.PrimaryKey("PK_CourseStudents", x => x.SelectionID);
                     table.ForeignKey(
-                        name: "FK_CourseStudent_Courses_Courses_SelectedCourseCode",
-                        column: x => x.Courses_SelectedCourseCode,
+                        name: "FK_CourseStudents_Courses_CourseID",
+                        column: x => x.CourseID,
                         principalTable: "Courses",
-                        principalColumn: "CourseCode",
+                        principalColumn: "CourseID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CourseStudent_Students_StudentsStudentID",
-                        column: x => x.StudentsStudentID,
+                        name: "FK_CourseStudents_Students_StudentID",
+                        column: x => x.StudentID,
                         principalTable: "Students",
                         principalColumn: "StudentID",
                         onDelete: ReferentialAction.Cascade);
@@ -102,9 +108,14 @@ namespace vtysproje.Migrations
                 column: "AdvisorID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseStudent_StudentsStudentID",
-                table: "CourseStudent",
-                column: "StudentsStudentID");
+                name: "IX_CourseStudents_CourseID",
+                table: "CourseStudents",
+                column: "CourseID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseStudents_StudentID",
+                table: "CourseStudents",
+                column: "StudentID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_AdvisorID",
@@ -116,7 +127,7 @@ namespace vtysproje.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CourseStudent");
+                name: "CourseStudents");
 
             migrationBuilder.DropTable(
                 name: "Courses");

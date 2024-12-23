@@ -5,9 +5,7 @@ using vtysproje.Models;
 
 namespace vtysproje.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AdvisorController
+    public class AdvisorController : Controller // ControllerBase yerine Controller kullanıldı
     {
         private readonly ApplicationDbContext _context;
 
@@ -17,34 +15,34 @@ namespace vtysproje.Controllers
         }
 
         // GET: Danışmanın öğrencilerinin listesi
-        [HttpGet("getStudents/{advisorId}")]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudents(int advisorId)
+        [HttpGet]
+        public async Task<IActionResult> GetStudents(int advisorId)
         {
             var students = await _context.Students
                 .Where(s => s.AdvisorID == advisorId)
                 .ToListAsync();
 
-            return students;
+            return View(students); // Görünüm (view) döndürülüyor
         }
 
         // GET: Danışmanın onay bekleyen ders seçimleri
-        [HttpGet("getPendingSelections/{advisorId}")]
-        public async Task<ActionResult<IEnumerable<CourseStudent>>> GetPendingSelections(int advisorId)
+        [HttpGet]
+        public async Task<IActionResult> GetPendingSelections(int advisorId)
         {
-            var selections = await _context.CourseStudent
+            var selections = await _context.CourseStudents
                 .Include(s => s.Student)
                 .Include(s => s.Course)
                 .Where(s => s.Student.AdvisorID == advisorId && s.IsApproved == false)
                 .ToListAsync();
 
-            return selections;
+            return View(selections); // Görünüm (view) döndürülüyor
         }
 
         // POST: Ders seçimini onayla
-        [HttpPost("approveSelection/{selectionId}")]
+        [HttpPost]
         public async Task<IActionResult> ApproveSelection(int selectionId)
         {
-            var selection = await _context.CourseStudent.FindAsync(selectionId);
+            var selection = await _context.CourseStudents.FindAsync(selectionId);
             if (selection == null)
             {
                 return NotFound(new { Message = "Selection not found" });
@@ -53,17 +51,22 @@ namespace vtysproje.Controllers
             selection.IsApproved = true;
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return RedirectToAction("GetPendingSelections", new { advisorId = selection.Student.AdvisorID }); // Onaydan sonra tekrar onay bekleyen dersleri getir
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAdvisorInfo(int advisorId)
+        {
+            // Danışmanın verilerini getiriyoruz
+            var advisor = await _context.Advisors
+                .FirstOrDefaultAsync(a => a.AdvisorID == advisorId);
+
+            if (advisor == null)
+            {
+                return NotFound("Danışman bulunamadı.");
+            }
+
+            return View(advisor); // Görünümü geri döndürüyoruz
         }
 
-        private IActionResult NoContent()
-        {
-            throw new NotImplementedException();
-        }
-
-        private IActionResult NotFound(object value)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
